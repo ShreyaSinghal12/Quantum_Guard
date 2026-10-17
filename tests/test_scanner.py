@@ -104,8 +104,11 @@ def test_symlinks_not_followed(tmp_path, ruleset):
     (outside / "a.py").write_text("RSA.generate(2048)\n")
     repo = tmp_path / "repo"
     repo.mkdir()
-    (repo / "link.py").symlink_to(outside / "a.py")
-    (repo / "linkdir").symlink_to(outside, target_is_directory=True)
+    try:
+        (repo / "link.py").symlink_to(outside / "a.py")
+        (repo / "linkdir").symlink_to(outside, target_is_directory=True)
+    except (OSError, NotImplementedError):
+        pytest.skip("Creating symlinks is not permitted here (Windows needs Developer Mode or admin).")
     assert scan_repository(repo, ruleset).findings == []
 
 

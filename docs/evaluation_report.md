@@ -1,6 +1,6 @@
 # QuantumGuard evaluation report
 
-Generated 2026-10-17 08:05 UTC by `python scripts/evaluate.py` (QuantumGuard 0.1.0). All values are measured by running the code; the dataset is small and synthetic, so treat these as prototype sanity checks, not coverage claims.
+Generated 2026-10-17 08:27 UTC by `python scripts/evaluate.py` (QuantumGuard 0.1.0). All values are measured by running the code; the dataset is small and synthetic, so treat these as prototype sanity checks, not coverage claims.
 
 ## 1. Detection on the labelled corpus (`tests/fixtures/labeled_corpus`)
 
