@@ -1,0 +1,133 @@
+{
+  "description": "Synthetic pull-request scenarios for the CI gate evaluation (scripts/evaluate.py). The base branch first adds and then removes 'app/sig.py' ECDSA signing, so re-adding it is a reintroduction.",
+  "base_history": [
+    {
+      "files": {
+        "app/sig.py": "def s(k, d):\n    return k.sign(d, ec.ECDSA(h))\n"
+      },
+      "message": "add signing",
+      "date": "2025-01-01T00:00:00Z"
+    },
+    {
+      "files": {
+        "app/sig.py": "def s(k, d):\n    return None\n"
+      },
+      "message": "remove signing",
+      "date": "2025-02-01T00:00:00Z"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "add RSA key generation",
+      "files": {
+        "app/k.py": "def f():\n    return rsa.generate_private_key(public_exponent=65537, key_size=2048)\n"
+      },
+      "unsafe": true,
+      "expected": "block"
+    },
+    {
+      "name": "add RSA-OAEP encryption",
+      "files": {
+        "app/e.py": "x = padding.OAEP(mgf=m, algorithm=a, label=None)\n"
+      },
+      "unsafe": true,
+      "expected": "block"
+    },
+    {
+      "name": "add ECDH key agreement",
+      "files": {
+        "app/d.py": "s = k.exchange(ec.ECDH(), peer)\n"
+      },
+      "unsafe": true,
+      "expected": "block"
+    },
+    {
+      "name": "add finite-field DH",
+      "files": {
+        "app/h.py": "p = dh.generate_parameters(generator=2, key_size=2048)\n"
+      },
+      "unsafe": true,
+      "expected": "block"
+    },
+    {
+      "name": "commit a classical private key",
+      "files": {
+        "keys/k.pem": "-----BEGIN EC PRIVATE KEY-----\nSYNTHETIC\n"
+      },
+      "unsafe": true,
+      "expected": "block"
+    },
+    {
+      "name": "add 1024-bit RSA (Go)",
+      "files": {
+        "svc/w.go": "k, _ := rsa.GenerateKey(rand.Reader, 1024)\n"
+      },
+      "unsafe": true,
+      "expected": "block"
+    },
+    {
+      "name": "reintroduce removed ECDSA signing",
+      "files": {
+        "app/sig.py": "def s(k, d):\n    return k.sign(d, ec.ECDSA(h))\n"
+      },
+      "unsafe": true,
+      "expected": "block"
+    },
+    {
+      "name": "add RSA in Java",
+      "files": {
+        "src/A.java": "K k = KeyPairGenerator.getInstance(\"RSA\");\n"
+      },
+      "unsafe": true,
+      "expected": "block"
+    },
+    {
+      "name": "new ECDSA signing (policy: warn)",
+      "files": {
+        "app/new_sig.py": "x = k.sign(d, ec.ECDSA(h2))\n"
+      },
+      "unsafe": false,
+      "expected": "warn"
+    },
+    {
+      "name": "comment mentioning RSA",
+      "files": {
+        "app/c.py": "# rsa.generate_private_key( removed\nx = 1\n"
+      },
+      "unsafe": false,
+      "expected": "pass"
+    },
+    {
+      "name": "docstring mentioning ECDH",
+      "files": {
+        "app/doc.py": "\"\"\"Uses ec.ECDH() previously.\"\"\"\nx = 1\n"
+      },
+      "unsafe": false,
+      "expected": "pass"
+    },
+    {
+      "name": "RSA in a test fixture",
+      "files": {
+        "tests/test_k.py": "def f():\n    return rsa.generate_private_key(public_exponent=65537, key_size=2048)\n"
+      },
+      "unsafe": false,
+      "expected": "warn"
+    },
+    {
+      "name": "suppressed line",
+      "files": {
+        "app/s.py": "k = RSA.generate(2048)  # quantumguard: ignore\n"
+      },
+      "unsafe": false,
+      "expected": "pass"
+    },
+    {
+      "name": "unrelated code",
+      "files": {
+        "app/u.py": "def add(a, b):\n    return a + b\n"
+      },
+      "unsafe": false,
+      "expected": "pass"
+    }
+  ]
+}

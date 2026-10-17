@@ -1,0 +1,316 @@
+{
+  "version": "1.0",
+  "description": "QuantumGuard detection rules. Shared by the local scanner, the Git history auditor and the CI gate. Patterns are matched against code with comments (and Python docstrings) removed.",
+  "settings": {
+    "include_extensions": [
+      "py",
+      "pyi",
+      "js",
+      "mjs",
+      "cjs",
+      "jsx",
+      "ts",
+      "tsx",
+      "java",
+      "kt",
+      "kts",
+      "scala",
+      "go",
+      "c",
+      "h",
+      "cc",
+      "cpp",
+      "hpp",
+      "cs",
+      "rs",
+      "rb",
+      "php",
+      "swift",
+      "sh",
+      "yaml",
+      "yml",
+      "toml",
+      "conf",
+      "cfg",
+      "ini",
+      "pem",
+      "key",
+      "txt",
+      "json",
+      "cmake",
+      "mod"
+    ],
+    "exclude_dirs": [
+      ".git",
+      "node_modules",
+      "venv",
+      ".venv",
+      "env",
+      "__pycache__",
+      "dist",
+      "build",
+      "target",
+      "vendor",
+      "site-packages",
+      ".tox",
+      ".mypy_cache",
+      ".pytest_cache",
+      ".idea",
+      ".vscode",
+      "coverage",
+      ".next",
+      "bower_components",
+      "third_party"
+    ],
+    "exclude_paths": [
+      "demo/templates/"
+    ],
+    "exclude_globs": [
+      "*.min.js",
+      "*_pb2.py",
+      "*.pb.go",
+      "*.generated.*",
+      "package-lock.json",
+      "yarn.lock",
+      "poetry.lock"
+    ],
+    "test_dirs": [
+      "test",
+      "tests",
+      "__tests__",
+      "fixtures",
+      "testdata",
+      "spec"
+    ],
+    "test_file_globs": [
+      "test_*.py",
+      "*_test.py",
+      "*_test.go",
+      "*.test.js",
+      "*.test.ts",
+      "*.spec.js",
+      "*.spec.ts",
+      "*Test.java"
+    ],
+    "max_file_bytes": 1000000,
+    "max_files": 20000,
+    "suppression_marker": "quantumguard: ignore"
+  },
+  "rules": [
+    {
+      "id": "QG-RSA-001",
+      "title": "RSA key generation (Python cryptography)",
+      "algorithm": "RSA",
+      "operation": "key_generation",
+      "algorithm_risk": "high",
+      "quantum_threat": "Shor's algorithm breaks RSA on a cryptographically relevant quantum computer.",
+      "extensions": [
+        "py"
+      ],
+      "pattern": "\\brsa\\.generate_private_key\\s*\\(",
+      "remediation": "Plan migration of this key's use: ML-KEM (FIPS 203) or a hybrid KEM for key establishment, ML-DSA (FIPS 204) for signatures. Inventory where the generated key is used."
+    },
+    {
+      "id": "QG-RSA-002",
+      "title": "RSA key generation (PyCryptodome)",
+      "algorithm": "RSA",
+      "operation": "key_generation",
+      "algorithm_risk": "high",
+      "quantum_threat": "Shor's algorithm breaks RSA on a cryptographically relevant quantum computer.",
+      "extensions": [
+        "py"
+      ],
+      "pattern": "\\bRSA\\.generate\\s*\\(",
+      "remediation": "Plan migration to ML-KEM (FIPS 203) / ML-DSA (FIPS 204) or hybrid schemes depending on how the key is used."
+    },
+    {
+      "id": "QG-RSA-003",
+      "title": "RSA encryption (OAEP / PKCS#1 v1.5)",
+      "algorithm": "RSA",
+      "operation": "encryption",
+      "algorithm_risk": "high",
+      "quantum_threat": "RSA-encrypted data captured today could be decrypted later (harvest-now-decrypt-later).",
+      "extensions": [
+        "py"
+      ],
+      "pattern": "\\bPKCS1_OAEP\\.new\\s*\\(|\\bpadding\\.OAEP\\s*\\(|\\bPKCS1_v1_5\\.new\\s*\\(",
+      "remediation": "Replace RSA key transport with ML-KEM (FIPS 203) or a hybrid KEM (e.g. X25519+ML-KEM) and an AEAD cipher."
+    },
+    {
+      "id": "QG-RSA-004",
+      "title": "RSA via Java/Kotlin JCA",
+      "algorithm": "RSA",
+      "operation": "encryption",
+      "algorithm_risk": "high",
+      "quantum_threat": "Shor's algorithm breaks RSA on a cryptographically relevant quantum computer.",
+      "extensions": [
+        "java",
+        "kt",
+        "kts",
+        "scala"
+      ],
+      "pattern": "KeyPairGenerator\\.getInstance\\(\\s*\"RSA\"|Cipher\\.getInstance\\(\\s*\"RSA",
+      "remediation": "Move key establishment to ML-KEM / hybrid KEM via a provider that implements FIPS 203."
+    },
+    {
+      "id": "QG-RSA-005",
+      "title": "RSA via Node.js crypto",
+      "algorithm": "RSA",
+      "operation": "encryption",
+      "algorithm_risk": "high",
+      "quantum_threat": "Shor's algorithm breaks RSA on a cryptographically relevant quantum computer.",
+      "extensions": [
+        "js",
+        "mjs",
+        "cjs",
+        "jsx",
+        "ts",
+        "tsx"
+      ],
+      "pattern": "generateKeyPair(?:Sync)?\\(\\s*['\"]rsa|\\bpublicEncrypt\\s*\\(",
+      "remediation": "Move key establishment to ML-KEM / hybrid KEM."
+    },
+    {
+      "id": "QG-RSA-006",
+      "title": "RSA via Go crypto/rsa",
+      "algorithm": "RSA",
+      "operation": "encryption",
+      "algorithm_risk": "high",
+      "quantum_threat": "Shor's algorithm breaks RSA on a cryptographically relevant quantum computer.",
+      "extensions": [
+        "go"
+      ],
+      "pattern": "\\brsa\\.(?:GenerateKey|EncryptOAEP|EncryptPKCS1v15)\\s*\\(",
+      "remediation": "For key establishment consider Go's crypto/mlkem (FIPS 203) or a hybrid KEM."
+    },
+    {
+      "id": "QG-RSA-SIG-001",
+      "title": "RSA signatures",
+      "algorithm": "RSA",
+      "operation": "signature",
+      "algorithm_risk": "medium",
+      "quantum_threat": "Signatures could be forged once RSA is breakable; past signatures are not retroactively decrypted.",
+      "extensions": [
+        "py",
+        "go",
+        "java",
+        "kt"
+      ],
+      "pattern": "\\bpadding\\.PSS\\s*\\(|\\bpkcs1_15\\.new\\s*\\(|\\brsa\\.Sign(?:PKCS1v15|PSS)\\s*\\(|Signature\\.getInstance\\(\\s*\"SHA\\d+withRSA",
+      "remediation": "Plan migration to ML-DSA (FIPS 204) or hybrid signatures; prioritise long-lived signing keys."
+    },
+    {
+      "id": "QG-EC-001",
+      "title": "Elliptic-curve key generation (Python cryptography)",
+      "algorithm": "ECC",
+      "operation": "key_generation",
+      "algorithm_risk": "high",
+      "quantum_threat": "Shor's algorithm also breaks elliptic-curve discrete log.",
+      "extensions": [
+        "py"
+      ],
+      "pattern": "\\bec\\.generate_private_key\\s*\\(",
+      "remediation": "Identify whether this key is used for ECDH (migrate to ML-KEM/hybrid) or ECDSA (migrate to ML-DSA)."
+    },
+    {
+      "id": "QG-ECDH-001",
+      "title": "Elliptic-curve Diffie-Hellman key agreement (Python)",
+      "algorithm": "ECDH",
+      "operation": "key_exchange",
+      "algorithm_risk": "high",
+      "quantum_threat": "Key agreements captured today could be broken later (harvest-now-decrypt-later).",
+      "extensions": [
+        "py"
+      ],
+      "pattern": "\\bec\\.ECDH\\s*\\(|\\bX25519PrivateKey\\.generate\\s*\\(|\\bX448PrivateKey\\.generate\\s*\\(",
+      "remediation": "Adopt a hybrid KEM (classical + ML-KEM) for key establishment."
+    },
+    {
+      "id": "QG-ECDH-002",
+      "title": "Elliptic-curve Diffie-Hellman (Go crypto/ecdh)",
+      "algorithm": "ECDH",
+      "operation": "key_exchange",
+      "algorithm_risk": "high",
+      "quantum_threat": "Key agreements captured today could be broken later (harvest-now-decrypt-later).",
+      "extensions": [
+        "go"
+      ],
+      "pattern": "\\becdh\\.(?:P256|P384|P521|X25519)\\s*\\(",
+      "remediation": "Adopt a hybrid KEM (classical + ML-KEM, e.g. crypto/mlkem) for key establishment."
+    },
+    {
+      "id": "QG-DH-001",
+      "title": "Finite-field Diffie-Hellman",
+      "algorithm": "DH",
+      "operation": "key_exchange",
+      "algorithm_risk": "high",
+      "quantum_threat": "Discrete-log key agreement is broken by Shor's algorithm.",
+      "extensions": [
+        "py",
+        "js",
+        "ts",
+        "java",
+        "kt"
+      ],
+      "pattern": "\\bdh\\.generate_parameters\\s*\\(|\\bcreateDiffieHellman\\s*\\(|KeyAgreement\\.getInstance\\(\\s*\"DH\"",
+      "remediation": "Replace with ML-KEM or a hybrid KEM."
+    },
+    {
+      "id": "QG-ECDSA-001",
+      "title": "ECDSA signatures",
+      "algorithm": "ECDSA",
+      "operation": "signature",
+      "algorithm_risk": "medium",
+      "quantum_threat": "Signatures could be forged once ECC is breakable.",
+      "extensions": [
+        "py",
+        "go",
+        "java",
+        "kt"
+      ],
+      "pattern": "\\bec\\.ECDSA\\s*\\(|\\becdsa\\.(?:GenerateKey|Sign|SignASN1)\\s*\\(|Signature\\.getInstance\\(\\s*\"SHA\\d+withECDSA\"",
+      "remediation": "Plan migration to ML-DSA (FIPS 204) or hybrid signatures."
+    },
+    {
+      "id": "QG-EDDSA-001",
+      "title": "Ed25519 signatures",
+      "algorithm": "EdDSA",
+      "operation": "signature",
+      "algorithm_risk": "medium",
+      "quantum_threat": "Signatures could be forged once ECC is breakable.",
+      "extensions": [
+        "py",
+        "go"
+      ],
+      "pattern": "\\bEd25519PrivateKey\\.generate\\s*\\(|\\bed25519\\.GenerateKey\\s*\\(",
+      "remediation": "Plan migration to ML-DSA (FIPS 204) or hybrid signatures."
+    },
+    {
+      "id": "QG-WEAK-001",
+      "title": "Short RSA modulus (classically weak too)",
+      "algorithm": "RSA",
+      "operation": "key_generation",
+      "algorithm_risk": "critical",
+      "quantum_threat": "Keys of 1024 bits or less are below current classical guidance, independent of quantum risk.",
+      "extensions": [
+        "py",
+        "go"
+      ],
+      "pattern": "key_size\\s*=\\s*(?:512|768|1024)\\b|\\bRSA\\.generate\\s*\\(\\s*(?:512|768|1024)\\b|\\brsa\\.GenerateKey\\s*\\([^,]+,\\s*(?:512|768|1024)\\s*\\)",
+      "remediation": "Remove immediately; never generate RSA keys of 1024 bits or less."
+    },
+    {
+      "id": "QG-KEY-001",
+      "title": "Embedded classical private key (PEM header)",
+      "algorithm": "RSA/EC/DSA",
+      "operation": "private_key_material",
+      "algorithm_risk": "critical",
+      "quantum_threat": "Embedded key material is a classical secret-exposure problem; the algorithm is also quantum-vulnerable.",
+      "extensions": [
+        "*"
+      ],
+      "pattern": "-----BEGIN (?:RSA|EC|DSA) PRIVATE KEY-----",
+      "remediation": "Remove the key from source control, rotate it, and purge it from history if required by policy."
+    }
+  ]
+}

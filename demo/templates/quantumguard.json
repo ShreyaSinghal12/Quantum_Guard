@@ -1,0 +1,8 @@
+{
+  "sensitivity": {
+    "payments/": "high",
+    "auth/": "high",
+    "partners/": "medium",
+    "reports/": "low"
+  }
+}

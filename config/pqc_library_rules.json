@@ -1,0 +1,83 @@
+{
+  "version": "1.0",
+  "last_reviewed": "2026-10-17",
+  "description": "Library/version evidence for draft-versus-final PQC. Every version rule must cite a source. Libraries without verified version rules always yield 'needs_manual_verification'.",
+  "standards": {
+    "FIPS 203": {
+      "title": "Module-Lattice-Based Key-Encapsulation Mechanism Standard",
+      "algorithm": "ML-KEM",
+      "published": "2024-08-13",
+      "url": "https://csrc.nist.gov/pubs/fips/203/final"
+    },
+    "FIPS 204": {
+      "title": "Module-Lattice-Based Digital Signature Standard",
+      "algorithm": "ML-DSA",
+      "published": "2024-08-13",
+      "url": "https://csrc.nist.gov/pubs/fips/204/final"
+    }
+  },
+  "algorithms": {
+    "ML-KEM": {"standard": "FIPS 203", "kind": "final_name"},
+    "Kyber": {"standard": "FIPS 203", "kind": "pre_standard_name",
+              "note": "'Kyber' is the name of the CRYSTALS-Kyber submission. FIPS 203 standardised it as ML-KEM with changes, so Round-3 Kyber and ML-KEM are not interoperable. The name alone does not prove which version an implementation uses."},
+    "ML-DSA": {"standard": "FIPS 204", "kind": "final_name"},
+    "Dilithium": {"standard": "FIPS 204", "kind": "pre_standard_name",
+                  "note": "'Dilithium' is the name of the CRYSTALS-Dilithium submission. FIPS 204 standardised it as ML-DSA with changes. The name alone does not prove which version an implementation uses."}
+  },
+  "api_indicators": [
+    {"id": "kyber-name", "algorithm": "Kyber", "pattern": "\\bKyber[-_ ]?(?:512|768|1024)\\b|OQS_KEM_alg_kyber_(?:512|768|1024)"},
+    {"id": "mlkem-name", "algorithm": "ML-KEM", "pattern": "\\bML[-_]?KEM[-_]?(?:512|768|1024)\\b|OQS_KEM_alg_ml_kem_(?:512|768|1024)"},
+    {"id": "dilithium-name", "algorithm": "Dilithium", "pattern": "\\bDilithium[-_ ]?[235]\\b|OQS_SIG_alg_dilithium_[235]"},
+    {"id": "mldsa-name", "algorithm": "ML-DSA", "pattern": "\\bML[-_]?DSA[-_]?(?:44|65|87)\\b|OQS_SIG_alg_ml_dsa_(?:44|65|87)"},
+    {"id": "go-crypto-mlkem", "algorithm": "ML-KEM", "pattern": "\"crypto/mlkem\"", "library": "go-stdlib-mlkem", "extensions": ["go"]}
+  ],
+  "libraries": [
+    {
+      "id": "liboqs",
+      "name": "liboqs (Open Quantum Safe C library)",
+      "languages": ["c", "h", "cc", "cpp", "hpp"],
+      "match": {"cmake_repo": ["open-quantum-safe/liboqs"], "conan": ["liboqs"], "vcpkg": ["liboqs"]},
+      "version_rules": [
+        {"algorithm": "ML-KEM", "ge": "0.10.0", "lt": "0.11.0", "status": "potentially_outdated_draft",
+         "evidence": "liboqs 0.10.0 (2024-03-23) added implementations of the Initial Public Draft (IPD) of ML-KEM; the update to final FIPS 203 is recorded in 0.11.0 (2024-09-29)."},
+        {"algorithm": "ML-KEM", "ge": "0.11.0", "status": "standard_aligned",
+         "evidence": "liboqs 0.11.0 (2024-09-29) release notes state ML-KEM implementations were updated to the final FIPS 203 version."},
+        {"algorithm": "ML-DSA", "ge": "0.10.0", "lt": "0.12.0", "status": "potentially_outdated_draft",
+         "evidence": "liboqs 0.10.0 added the Initial Public Draft (IPD) of ML-DSA; the update to final FIPS 204 is recorded in 0.12.0 (2024-12-10)."},
+        {"algorithm": "ML-DSA", "ge": "0.12.0", "status": "standard_aligned",
+         "evidence": "liboqs 0.12.0 (2024-12-10) release notes state the ML-DSA implementation was updated to the final FIPS 204 version."},
+        {"algorithm": "Kyber", "ge": "0.0.0", "status": "potentially_outdated_draft",
+         "evidence": "liboqs 0.11.0 notes Round-3 Kyber is kept only for interoperability; 0.12.0 states it is the last release to include Kyber and that applications should switch to ML-KEM (FIPS 203)."},
+        {"algorithm": "Dilithium", "ge": "0.0.0", "status": "potentially_outdated_draft",
+         "evidence": "liboqs 0.12.0 notes NIST Round-3 Dilithium is kept only for interoperability and is planned for removal; ML-DSA implements FIPS 204."}
+      ],
+      "upgrade": {"ML-KEM": "0.11.0", "ML-DSA": "0.12.0", "Kyber": "use ML-KEM (FIPS 203)", "Dilithium": "use ML-DSA (FIPS 204)"},
+      "sources": [
+        {"title": "liboqs release notes (GitHub)", "url": "https://github.com/open-quantum-safe/liboqs/releases"},
+        {"title": "liboqs changelog as packaged by openSUSE (mirrors upstream release notes)", "url": "https://src.opensuse.org/c_cpp/liboqs/raw/branch/main/liboqs.changes"}
+      ]
+    },
+    {
+      "id": "liboqs-python",
+      "name": "liboqs-python (Python wrapper for liboqs)",
+      "languages": ["py"],
+      "match": {"pypi": ["liboqs-python"]},
+      "version_rules": [],
+      "manual_note": "The wrapper version does not by itself establish which liboqs C library is loaded at runtime, so QuantumGuard does not map wrapper versions to FIPS status. Check the loaded C library version (e.g. oqs.oqs_version()) and compare it with the liboqs rules.",
+      "sources": [
+        {"title": "liboqs-python repository", "url": "https://github.com/open-quantum-safe/liboqs-python"}
+      ]
+    },
+    {
+      "id": "go-stdlib-mlkem",
+      "name": "Go standard library crypto/mlkem",
+      "languages": ["go"],
+      "match": {},
+      "indicator_status": {"status": "standard_aligned", "confidence": "verified",
+                           "evidence": "Go documentation (go1.24.0) states crypto/mlkem implements ML-KEM (formerly known as Kyber) as specified in NIST FIPS 203."},
+      "sources": [
+        {"title": "pkg.go.dev crypto/mlkem (go1.24.0)", "url": "https://pkg.go.dev/crypto/mlkem@go1.24.0"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,218 @@
+{
+  "generated_at": "2026-10-17 08:05 UTC",
+  "version": "0.1.0",
+  "detection": {
+    "labelled_positives": 29,
+    "predicted": 26,
+    "true_positives": 25,
+    "false_positives": [
+      [
+        "py_negative.py",
+        8,
+        "QG-ECDH-001"
+      ]
+    ],
+    "false_negatives": [
+      [
+        "JavaCases.java",
+        9,
+        "QG-RSA-004"
+      ],
+      [
+        "js_cases.js",
+        6,
+        "QG-ECDH-JS"
+      ],
+      [
+        "py_hard.py",
+        2,
+        "QG-RSA-001"
+      ],
+      [
+        "py_hard.py",
+        3,
+        "QG-RSA-001"
+      ]
+    ],
+    "precision": 0.962,
+    "recall": 0.862
+  },
+  "ci": {
+    "scenarios": [
+      {
+        "scenario": "add RSA key generation",
+        "unsafe": true,
+        "expected": "block",
+        "actual": "block",
+        "exit_code": 1,
+        "correct": true
+      },
+      {
+        "scenario": "add RSA-OAEP encryption",
+        "unsafe": true,
+        "expected": "block",
+        "actual": "block",
+        "exit_code": 1,
+        "correct": true
+      },
+      {
+        "scenario": "add ECDH key agreement",
+        "unsafe": true,
+        "expected": "block",
+        "actual": "block",
+        "exit_code": 1,
+        "correct": true
+      },
+      {
+        "scenario": "add finite-field DH",
+        "unsafe": true,
+        "expected": "block",
+        "actual": "block",
+        "exit_code": 1,
+        "correct": true
+      },
+      {
+        "scenario": "commit a classical private key",
+        "unsafe": true,
+        "expected": "block",
+        "actual": "block",
+        "exit_code": 1,
+        "correct": true
+      },
+      {
+        "scenario": "add 1024-bit RSA (Go)",
+        "unsafe": true,
+        "expected": "block",
+        "actual": "block",
+        "exit_code": 1,
+        "correct": true
+      },
+      {
+        "scenario": "reintroduce removed ECDSA signing",
+        "unsafe": true,
+        "expected": "block",
+        "actual": "block",
+        "exit_code": 1,
+        "correct": true
+      },
+      {
+        "scenario": "add RSA in Java",
+        "unsafe": true,
+        "expected": "block",
+        "actual": "block",
+        "exit_code": 1,
+        "correct": true
+      },
+      {
+        "scenario": "new ECDSA signing (policy: warn)",
+        "unsafe": false,
+        "expected": "warn",
+        "actual": "warn",
+        "exit_code": 0,
+        "correct": true
+      },
+      {
+        "scenario": "comment mentioning RSA",
+        "unsafe": false,
+        "expected": "pass",
+        "actual": "pass",
+        "exit_code": 0,
+        "correct": true
+      },
+      {
+        "scenario": "docstring mentioning ECDH",
+        "unsafe": false,
+        "expected": "pass",
+        "actual": "pass",
+        "exit_code": 0,
+        "correct": true
+      },
+      {
+        "scenario": "RSA in a test fixture",
+        "unsafe": false,
+        "expected": "warn",
+        "actual": "warn",
+        "exit_code": 0,
+        "correct": true
+      },
+      {
+        "scenario": "suppressed line",
+        "unsafe": false,
+        "expected": "pass",
+        "actual": "pass",
+        "exit_code": 0,
+        "correct": true
+      },
+      {
+        "scenario": "unrelated code",
+        "unsafe": false,
+        "expected": "pass",
+        "actual": "pass",
+        "exit_code": 0,
+        "correct": true
+      }
+    ],
+    "unsafe_changes": 8,
+    "unsafe_blocked": 8,
+    "safe_changes": 6,
+    "safe_changes_blocked": 0,
+    "decisions_matching_expectation": 14
+  },
+  "demo_ci": [
+    {
+      "branch": "feature/legacy-partner-rsa",
+      "expected": "BLOCKED",
+      "actual": "BLOCKED",
+      "exit_code": 1
+    },
+    {
+      "branch": "feature/add-ecdsa-receipts",
+      "expected": "PASSED WITH WARNINGS",
+      "actual": "PASSED WITH WARNINGS",
+      "exit_code": 0
+    },
+    {
+      "branch": "feature/docs-and-tests",
+      "expected": "PASSED WITH WARNINGS",
+      "actual": "PASSED WITH WARNINGS",
+      "exit_code": 0
+    },
+    {
+      "branch": "feature/upgrade-liboqs",
+      "expected": "PASSED",
+      "actual": "PASSED",
+      "exit_code": 0
+    }
+  ],
+  "ranking": {
+    "expected_order": [
+      "S1_current_rsa_encryption_payments_reintroduced",
+      "S2_verified_draft_mlkem_payments",
+      "S3_current_ecdh_unknown_sensitivity",
+      "S4_historical_only_rsa_keygen_payments",
+      "S5_unknown_kyber_usage",
+      "S6_current_ecdsa_signature_low_sensitivity",
+      "S7_test_only_rsa_keygen"
+    ],
+    "actual_order": [
+      "S1_current_rsa_encryption_payments_reintroduced",
+      "S2_verified_draft_mlkem_payments",
+      "S3_current_ecdh_unknown_sensitivity",
+      "S4_historical_only_rsa_keygen_payments",
+      "S5_unknown_kyber_usage",
+      "S6_current_ecdsa_signature_low_sensitivity",
+      "S7_test_only_rsa_keygen"
+    ],
+    "scores": {
+      "S1_current_rsa_encryption_payments_reintroduced": 95.0,
+      "S2_verified_draft_mlkem_payments": 95.0,
+      "S3_current_ecdh_unknown_sensitivity": 75.5,
+      "S4_historical_only_rsa_keygen_payments": 67.0,
+      "S5_unknown_kyber_usage": 51.0,
+      "S6_current_ecdsa_signature_low_sensitivity": 46.8,
+      "S7_test_only_rsa_keygen": 42.3
+    },
+    "ordered_pairs_correct": 21,
+    "ordered_pairs_total": 21
+  }
+}

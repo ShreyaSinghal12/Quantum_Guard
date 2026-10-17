@@ -1,0 +1,23 @@
+{
+  "version": "1.0",
+  "description": "CI/CD gate policy. Only lines added or changed by the pull request are gated; pre-existing code is reported by the full audit, not blocked.",
+  "mode": "enforce",
+  "block": {
+    "operations": ["key_exchange", "encryption", "key_generation", "private_key_material"],
+    "rules": ["QG-WEAK-001", "QG-KEY-001"]
+  },
+  "warn": {
+    "operations": ["signature"],
+    "rules": []
+  },
+  "allow_rules": [],
+  "test_paths": "warn",
+  "block_reintroduced": true,
+  "history_max_commits": 2000,
+  "pqc": {
+    "potentially_outdated_draft": "warn",
+    "needs_manual_verification": "warn",
+    "standard_aligned": "pass"
+  },
+  "fail_on_warn": false
+}

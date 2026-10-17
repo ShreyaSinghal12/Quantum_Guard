@@ -1,0 +1,45 @@
+name: QuantumGuard
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pytest
+      - run: python -m pytest -q
+
+  pqc-gate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0            # full history: needed for the reintroduction check
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # The gate uses only the Python standard library; no install step is needed.
+      - name: Quantum-safe CI gate (changed lines only)
+        run: >
+          python -m quantumguard ci
+          --repo .
+          --base "origin/${{ github.base_ref }}"
+          --head HEAD
+          --json quantumguard-ci.json
+      - name: Upload gate result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quantumguard-ci
+          path: quantumguard-ci.json

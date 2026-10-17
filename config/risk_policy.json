@@ -1,0 +1,27 @@
+{
+  "version": "1.0",
+  "disclaimer": "The score is a remediation-priority score from 0 to 100 under the documented rules below. It is not a probability of compromise, and a historical finding is potential exposure, not evidence that data was captured or decrypted.",
+  "algorithm_risk_points": {"critical": 30, "high": 25, "medium": 18, "low": 10},
+  "operation_points": {"key_exchange": 15, "encryption": 15, "private_key_material": 12, "key_generation": 10, "signature": 5},
+  "data_sensitivity": {
+    "points": {"high": 20, "medium": 10, "low": 3},
+    "unknown_assumption": "medium",
+    "test_context_assumption": "low",
+    "paths": {}
+  },
+  "presence_points": {
+    "current_production": 20,
+    "uncommitted": 20,
+    "present_at_head_not_in_worktree": 12,
+    "historical_only": 8,
+    "current_test": 4
+  },
+  "exposure": {"max_points": 10, "full_points_after_days": 365},
+  "reintroduction_points": 5,
+  "pqc": {
+    "status_points": {"potentially_outdated_draft": 40, "needs_manual_verification": 18, "standard_aligned": 0},
+    "confidence_points": {"verified": 15, "partial": 8, "synthetic": 5, "unknown": 3},
+    "usage_points": {"production": 20, "test": 4, "none": 6}
+  },
+  "severity_thresholds": {"critical": 80, "high": 60, "medium": 40, "low": 20}
+}

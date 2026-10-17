@@ -1,0 +1,6 @@
+# Core scanner, history auditor, PQC validator, risk engine and CI gate use only the
+# Python standard library (Python 3.11+). These packages are for the dashboard and tests.
+streamlit>=1.40
+plotly>=5.20
+pandas>=2.0
+pytest>=8.0
