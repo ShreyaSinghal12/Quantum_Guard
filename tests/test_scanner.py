@@ -141,3 +141,35 @@ def test_labeled_corpus_regression():
     m = mod.detection_metrics(RuleSet.load())
     assert m["true_positives"] >= 25 and len(m["false_positives"]) <= 1
     assert ("py_negative.py", 8, "QG-ECDH-001") in m["false_positives"]
+
+
+# ---------------------------------------------------------------- IBM Z / ICSF
+
+COBOL = (
+    "       IDENTIFICATION DIVISION.\n"
+    "      * CALL 'CSNDPKG' USING A B.\n"
+    "      / CALL 'CSNDEDH' USING A B.\n"
+    "       01  WS-KEY-TYPE  PIC X(8) VALUE 'RSA-CRT'.\n"
+    "           CALL 'CSNDEDH' USING A B.\n"
+    "           call \"csndpke\" using a b.\n"
+    "           CALL 'CSNFSYX' USING A B.\n"
+    "           MOVE 1 TO X. *> CALL 'CSNDDSG' in an inline comment\n"
+    "           DISPLAY 'CALL CSNDPKG IS DOCUMENTED ELSEWHERE'.\n"
+)
+
+
+def test_cobol_icsf_rules_and_comments(ruleset):
+    found = [(f.line, f.rule_id) for f in scan_text("batch/SETTLE.cbl", COBOL, ruleset)]
+    assert found == [(4, "QG-ICSF-006"), (5, "QG-ICSF-001"), (6, "QG-ICSF-002"), (7, "QG-ICSF-003")]
+
+
+@pytest.mark.parametrize("path,code,expected", [
+    ("x.pli", "CALL CSNDPKG(RC, RS);", ["QG-ICSF-004"]),
+    ("x.pli", "/* CALL CSNDPKG(RC, RS); */", []),
+    ("x.asm", "         CALL  CSNDDSG,(RC,RS)", ["QG-ICSF-005"]),
+    ("x.asm", "*        CALL  CSNDDSG,(RC,RS)", []),
+    ("x.cpy", "       01  K  PIC X(8) VALUE 'ECC-PAIR'.", ["QG-ICSF-006"]),
+    ("x.cpy", "       01  K  PIC X(8) VALUE 'ECC-PUBL'.", []),
+])
+def test_other_mainframe_languages(ruleset, path, code, expected):
+    assert ids(scan_text(path, code + "\n", ruleset)) == expected

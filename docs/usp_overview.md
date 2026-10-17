@@ -12,6 +12,9 @@ Reads dependency manifests and PQC identifiers, then applies version rules that 
 ## 4. Explainable risk-based prioritisation
 A 0-100 priority built from configurable factors. Each factor shows points, maximum, a reason, and whether the input is a **fact**, **user-supplied**, **repository-declared**, an **assumption** or **unknown**. Users change weights and sensitivity in the dashboard without touching code. A test checks that documented higher-risk scenarios rank above lower-risk ones.
 
+## Mainframe coverage
+The same scanner understands COBOL, PL/I and assembler comments and detects IBM ICSF calls (CSNDEDH, CSNDPKE, CSNDSYX, CSNDPKG, CSNDDSG and classical key-token keywords), so mainframe source in Git gets the same history audit, CI gate and scoring.
+
 ## What connects them
 History tells the CI gate what was removed. PQC evidence, history (exposure, reintroduction) and sensitivity all flow into one score. One dashboard and one report show the chain from evidence to recommended action.
 

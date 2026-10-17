@@ -3,6 +3,7 @@
     "payments/": "high",
     "auth/": "high",
     "partners/": "medium",
-    "reports/": "low"
+    "reports/": "low",
+    "mainframe/": "high"
   }
 }

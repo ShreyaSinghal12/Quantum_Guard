@@ -22,7 +22,7 @@ cd quantumguard
 python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 
-python -m pytest -q                                      # 92 tests
+python -m pytest -q                                      # 100 tests
 streamlit run app.py                                     # dashboard on http://localhost:8501
 ```
 
@@ -46,13 +46,30 @@ CI exit codes: `0` pass (warnings allowed), `1` blocked, `2` tool or usage error
 
 | Area | What it does |
 |---|---|
-| Current-code scanner (`scanner.py`) | 15 regex rules in `config/crypto_rules.json` for Python, Java/Kotlin, Go, JS/TS and PEM files. Strips comments and Python docstrings before matching, marks test paths, honours `quantumguard: ignore`, skips binaries, symlinks, dependency/venv/build folders, generated files and oversized files. |
+| Current-code scanner (`scanner.py`) | 21 regex rules in `config/crypto_rules.json` for Python, Java/Kotlin, Go, JS/TS, PEM files and **IBM Z mainframe code** (COBOL, PL/I and assembler calling IBM ICSF). Strips comments and Python docstrings before matching, marks test paths, honours `quantumguard: ignore`, skips binaries, symlinks, dependency/venv/build folders, generated files and oversized files. |
 | Historical auditor (`git_history.py`) | Walks first-parent history, rescans each changed file at each commit with the *same* scanner, and records introduced / removed / reintroduced events, exposure windows and current vs historical-only status. Findings are tracked by a fingerprint (rule + file + normalised code), so moved lines and whitespace edits do not create false events. |
 | PQC validator (`pqc_validator.py`) | Parses `requirements*.txt`, `pyproject.toml`, `package.json`, `go.mod`, `Cargo.toml`, CMake `FetchContent`/`ExternalProject`, `vcpkg.json` and `conanfile.txt`; finds Kyber / ML-KEM / Dilithium / ML-DSA identifiers in code; links code to the nearest manifest of a matching language; applies cited version rules in `config/pqc_library_rules.json`. Results: *Potentially outdated draft*, *Aligned with final standard*, or *Needs manual verification*, each with a confidence level (verified / partial / unknown / synthetic). |
 | Risk engine (`risk_engine.py`) | Configurable factors in `config/risk_policy.json`: algorithm risk, operation (harvest-now-decrypt-later exposure), data sensitivity, current presence, exposure duration, reintroduction, plus PQC status/confidence/usage. Every factor has points, maximum, basis and reason. Adjustable from the dashboard without code changes. |
 | CI/CD gate (`policy_engine.py`) | Gates only lines added by the change, blocks or warns per `config/ci_policy.json`, flags reintroductions using the base branch's history, checks PQC changes, emits GitHub annotations and a job summary. |
 | Reports (`report_generator.py`) | JSON (full evidence), CSV (spreadsheet-injection safe) and Markdown. |
 | Dashboard (`app.py`) | Overview, Repository scan, Historical audit (exposure-window timeline), PQC validation, Risk prioritization (factor breakdown), CI/CD gate (run the gate on any two refs), Reports. |
+
+## IBM Z / mainframe support
+
+QuantumGuard detects quantum-vulnerable calls to **IBM ICSF** (Integrated Cryptographic Service Facility, the z/OS cryptographic API) in COBOL (`.cbl/.cob/.cpy`), PL/I (`.pli/.pl1`) and HLASM (`.asm`) source. Service names and key-token keywords were checked against IBM's z/OS ICSF documentation:
+
+| Rule | Detects | Operation |
+|---|---|---|
+| QG-ICSF-001 | `CALL 'CSNDEDH'` / `CSNFEDH` - ECC Diffie-Hellman | key exchange (blocked in CI) |
+| QG-ICSF-002 | `CSNDPKE` / `CSNFPKE` - PKA Encrypt (RSA) | encryption (blocked) |
+| QG-ICSF-003 | `CSNDSYX` / `CSNFSYX` - Symmetric Key Export under a public key | encryption (blocked) |
+| QG-ICSF-004 | `CSNDPKG` / `CSNFPKG` - PKA Key Generate (key type must be verified) | key generation (blocked) |
+| QG-ICSF-005 | `CSNDDSG` / `CSNFDSG` - Digital Signature Generate | signature (warning) |
+| QG-ICSF-006 | key-token keywords `'RSA-CRT'`, `'RSA-PRIV'`, `'RSA-AESC'`, `'RSA-AESM'`, `'RSAMEVAR'`, `'ECC-PAIR'` | classical private key |
+
+COBOL fixed-format comment lines (`*` or `/` in column 7), inline `*>` comments, PL/I `/* */` comments and assembler `*` comment lines are ignored. Mainframe source stored in Git gets the same history audit, CI gate and risk scoring as any other code.
+
+This is **static source analysis only**: the prototype does not connect to a z/OS system, ICSF, Crypto Express adapters or IBM Quantum Safe tools. See [docs/limitations.md](docs/limitations.md).
 
 ## Architecture
 
@@ -107,8 +124,8 @@ Measured by `python scripts/evaluate.py` (full report: [docs/evaluation_report.m
 
 | Measure | Result |
 |---|---|
-| Precision on labelled corpus | 0.962 (25 TP, 1 FP) |
-| Recall on labelled corpus | 0.862 (4 FN, all deliberate hard cases) |
+| Precision on labelled corpus | 0.966 (28 TP, 1 FP) |
+| Recall on labelled corpus | 0.848 (5 FN, all deliberate hard cases) |
 | Unsafe synthetic changes blocked | 8 / 8 |
 | Safe synthetic changes blocked | 0 / 6 |
 | Documented risk scenarios ordered correctly | 21 / 21 pairs |

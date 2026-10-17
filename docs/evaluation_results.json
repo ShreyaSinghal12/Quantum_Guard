@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-17 08:27 UTC",
+  "generated_at": "2026-10-17 12:19 UTC",
   "version": "0.1.0",
   "detection": {
-    "labelled_positives": 29,
-    "predicted": 26,
-    "true_positives": 25,
+    "labelled_positives": 33,
+    "predicted": 29,
+    "true_positives": 28,
     "false_positives": [
       [
         "py_negative.py",
@@ -17,6 +17,11 @@
         "JavaCases.java",
         9,
         "QG-RSA-004"
+      ],
+      [
+        "MFCASES.cbl",
+        12,
+        "QG-ICSF-001"
       ],
       [
         "js_cases.js",
@@ -34,8 +39,8 @@
         "QG-RSA-001"
       ]
     ],
-    "precision": 0.962,
-    "recall": 0.862
+    "precision": 0.966,
+    "recall": 0.848
   },
   "ci": {
     "scenarios": [
@@ -182,6 +187,12 @@
       "expected": "PASSED",
       "actual": "PASSED",
       "exit_code": 0
+    },
+    {
+      "branch": "feature/mainframe-key-export",
+      "expected": "BLOCKED",
+      "actual": "BLOCKED",
+      "exit_code": 1
     }
   ],
   "ranking": {

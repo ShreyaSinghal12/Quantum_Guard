@@ -22,7 +22,9 @@ from .config import QGError, load_json
 
 HASH_COMMENT_EXT = {"py", "pyi", "rb", "sh", "yaml", "yml", "toml", "conf", "cfg", "ini", "cmake", "txt"}
 C_COMMENT_EXT = {"js", "mjs", "cjs", "jsx", "ts", "tsx", "java", "kt", "kts", "scala", "go",
-                 "c", "h", "cc", "cpp", "hpp", "cs", "rs", "swift", "php"}
+                 "c", "h", "cc", "cpp", "hpp", "cs", "rs", "swift", "php", "pli", "pl1"}
+COBOL_EXT = {"cbl", "cob", "cpy"}
+ASM_EXT = {"asm"}
 PY_DOCSTRING_START = re.compile(r'^[rRbBuUfF]{0,2}("""|\'\'\')')
 
 
@@ -268,8 +270,38 @@ def _strip_hash_style(lines: list[str], python: bool) -> list[str]:
     return out
 
 
+def _strip_cobol(lines: list[str]) -> list[str]:
+    """COBOL: '*' or '/' in column 7 marks a fixed-format comment line; '*>' starts an inline comment."""
+    out = []
+    for line in lines:
+        if len(line) >= 7 and line[6] in "*/":
+            out.append("")
+            continue
+        quote, cut = None, len(line)
+        for i, ch in enumerate(line):
+            if quote:
+                if ch == quote:
+                    quote = None
+            elif ch in "\"'":
+                quote = ch
+            elif ch == "*" and line[i + 1:i + 2] == ">":
+                cut = i
+                break
+        out.append(line[:cut])
+    return out
+
+
+def _strip_asm(lines: list[str]) -> list[str]:
+    """HLASM: '*' in column 1 (or '.*' for macro comments) marks a comment line."""
+    return ["" if line.startswith(("*", ".*")) else line for line in lines]
+
+
 def code_view(lines: list[str], ext: str) -> list[str]:
     """Return each line with comments removed (same length as input)."""
+    if ext in COBOL_EXT:
+        return _strip_cobol(lines)
+    if ext in ASM_EXT:
+        return _strip_asm(lines)
     if ext in C_COMMENT_EXT:
         return _strip_c_style(lines)
     if ext in HASH_COMMENT_EXT:

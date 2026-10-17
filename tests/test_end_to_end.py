@@ -57,6 +57,12 @@ def test_C_ci_gate_outcomes_match_plan(demo):
     assert blocked.exit_code == 1 and blocked.decisions[0].reintroduced_from is not None
 
 
+def test_mainframe_icsf_findings(audit):
+    edh = by(audit, "QG-ICSF-001", "mainframe/SETTLE.cbl")
+    assert edh["status"] == "current_production" and edh["severity"] == "critical"
+    assert not any(i.get("rule_id") == "QG-ICSF-004" for i in audit.items)   # commented-out call
+
+
 def test_D_pqc_verified_and_manual_cases(audit):
     pqc = {(i["library"], i["algorithm"]): i for i in audit.items if i["kind"] == "pqc"}
     draft = pqc[("liboqs", "ML-KEM")]

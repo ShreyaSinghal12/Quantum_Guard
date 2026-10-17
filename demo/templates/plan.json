@@ -1,36 +1,116 @@
 {
   "description": "Controlled, SYNTHETIC Git history for the QuantumGuard end-to-end demo. Dates are fixed so results are reproducible.",
   "commits": [
-    {"branch": "main", "date": "2025-01-15T10:00:00Z", "message": "Initial payments service with RSA token exchange",
-     "write": {"payments/token_exchange.py": "token_exchange_v1.py", "payments/__init__.py": null,
-               "auth/session_signer.py": "session_signer.py", "tests/test_token_exchange.py": "test_token_exchange.py",
-               "utils/notes.py": "notes.py", "reports/export.py": "export.py",
-               ".quantumguard.json": "quantumguard.json", "README.md": "README.md"}},
-    {"branch": "main", "date": "2025-02-20T10:00:00Z", "message": "Add ECDH key agreement for partner channel",
-     "write": {"partners/channel.py": "channel.py"}},
-    {"branch": "main", "date": "2025-04-02T10:00:00Z", "message": "Add native ML-KEM prototype using liboqs",
-     "write": {"native/CMakeLists.txt": "CMakeLists_v1.txt", "native/kem_demo.c": "kem_demo.c"}},
-    {"branch": "main", "date": "2025-06-10T10:00:00Z", "message": "Migrate token exchange off RSA key transport",
-     "write": {"payments/token_exchange.py": "token_exchange_v2.py", "payments/kem_adapter.py": "kem_adapter.py"}},
-    {"branch": "main", "date": "2025-08-05T10:00:00Z", "message": "Add Python PQC client experiment",
-     "write": {"requirements.txt": "requirements.txt", "pqc_experiments/kem_client.py": "kem_client.py"}},
-    {"branch": "feature/legacy-partner-rsa", "from": "main", "date": "2025-09-12T10:00:00Z",
-     "message": "Restore RSA key for legacy partner",
-     "write": {"payments/token_exchange.py": "token_exchange_v3.py"}},
-    {"branch": "feature/add-ecdsa-receipts", "from": "main", "date": "2025-09-13T10:00:00Z",
-     "message": "Sign receipts with ECDSA",
-     "write": {"reports/receipts.py": "receipts.py"}},
-    {"branch": "feature/docs-and-tests", "from": "main", "date": "2025-09-14T10:00:00Z",
-     "message": "Reviewer note and partner test fixture",
-     "write": {"reports/export.py": "export_v2.py", "tests/test_partner_fixture.py": "test_partner_fixture.py"}},
-    {"branch": "feature/upgrade-liboqs", "from": "main", "date": "2025-09-15T10:00:00Z",
-     "message": "Upgrade liboqs to 0.11.0 for final FIPS 203 ML-KEM",
-     "write": {"native/CMakeLists.txt": "CMakeLists_v2.txt"}}
+    {
+      "branch": "main",
+      "date": "2025-01-15T10:00:00Z",
+      "message": "Initial payments service with RSA token exchange",
+      "write": {
+        "payments/token_exchange.py": "token_exchange_v1.py",
+        "payments/__init__.py": null,
+        "auth/session_signer.py": "session_signer.py",
+        "tests/test_token_exchange.py": "test_token_exchange.py",
+        "utils/notes.py": "notes.py",
+        "reports/export.py": "export.py",
+        ".quantumguard.json": "quantumguard.json",
+        "README.md": "README.md"
+      }
+    },
+    {
+      "branch": "main",
+      "date": "2025-02-20T10:00:00Z",
+      "message": "Add ECDH key agreement for partner channel",
+      "write": {
+        "partners/channel.py": "channel.py"
+      }
+    },
+    {
+      "branch": "main",
+      "date": "2025-04-02T10:00:00Z",
+      "message": "Add native ML-KEM prototype using liboqs",
+      "write": {
+        "native/CMakeLists.txt": "CMakeLists_v1.txt",
+        "native/kem_demo.c": "kem_demo.c"
+      }
+    },
+    {
+      "branch": "main",
+      "date": "2025-06-10T10:00:00Z",
+      "message": "Migrate token exchange off RSA key transport",
+      "write": {
+        "payments/token_exchange.py": "token_exchange_v2.py",
+        "payments/kem_adapter.py": "kem_adapter.py"
+      }
+    },
+    {
+      "branch": "main",
+      "date": "2025-08-05T10:00:00Z",
+      "message": "Add Python PQC client experiment",
+      "write": {
+        "requirements.txt": "requirements.txt",
+        "pqc_experiments/kem_client.py": "kem_client.py"
+      }
+    },
+    {
+      "branch": "main",
+      "date": "2025-08-20T10:00:00Z",
+      "message": "Add mainframe settlement batch (COBOL, IBM ICSF)",
+      "write": {
+        "mainframe/SETTLE.cbl": "SETTLE_v1.cbl"
+      }
+    },
+    {
+      "branch": "feature/legacy-partner-rsa",
+      "from": "main",
+      "date": "2025-09-12T10:00:00Z",
+      "message": "Restore RSA key for legacy partner",
+      "write": {
+        "payments/token_exchange.py": "token_exchange_v3.py"
+      }
+    },
+    {
+      "branch": "feature/add-ecdsa-receipts",
+      "from": "main",
+      "date": "2025-09-13T10:00:00Z",
+      "message": "Sign receipts with ECDSA",
+      "write": {
+        "reports/receipts.py": "receipts.py"
+      }
+    },
+    {
+      "branch": "feature/docs-and-tests",
+      "from": "main",
+      "date": "2025-09-14T10:00:00Z",
+      "message": "Reviewer note and partner test fixture",
+      "write": {
+        "reports/export.py": "export_v2.py",
+        "tests/test_partner_fixture.py": "test_partner_fixture.py"
+      }
+    },
+    {
+      "branch": "feature/upgrade-liboqs",
+      "from": "main",
+      "date": "2025-09-15T10:00:00Z",
+      "message": "Upgrade liboqs to 0.11.0 for final FIPS 203 ML-KEM",
+      "write": {
+        "native/CMakeLists.txt": "CMakeLists_v2.txt"
+      }
+    },
+    {
+      "branch": "feature/mainframe-key-export",
+      "from": "main",
+      "date": "2025-09-16T10:00:00Z",
+      "message": "Export settlement key to partner bank via ICSF",
+      "write": {
+        "mainframe/SETTLE.cbl": "SETTLE_v2.cbl"
+      }
+    }
   ],
   "expected_ci": {
     "feature/legacy-partner-rsa": "BLOCKED",
     "feature/add-ecdsa-receipts": "PASSED WITH WARNINGS",
     "feature/docs-and-tests": "PASSED WITH WARNINGS",
-    "feature/upgrade-liboqs": "PASSED"
+    "feature/upgrade-liboqs": "PASSED",
+    "feature/mainframe-key-export": "BLOCKED"
   }
 }

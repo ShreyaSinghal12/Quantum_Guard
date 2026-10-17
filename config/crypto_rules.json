@@ -38,7 +38,13 @@
       "txt",
       "json",
       "cmake",
-      "mod"
+      "mod",
+      "cbl",
+      "cob",
+      "cpy",
+      "pli",
+      "pl1",
+      "asm"
     ],
     "exclude_dirs": [
       ".git",
@@ -311,6 +317,137 @@
       ],
       "pattern": "-----BEGIN (?:RSA|EC|DSA) PRIVATE KEY-----",
       "remediation": "Remove the key from source control, rotate it, and purge it from history if required by policy."
+    },
+    {
+      "id": "QG-ICSF-001",
+      "title": "IBM ICSF ECC Diffie-Hellman (CSNDEDH/CSNFEDH)",
+      "algorithm": "ECDH",
+      "operation": "key_exchange",
+      "algorithm_risk": "high",
+      "quantum_threat": "Elliptic-curve key agreement is broken by Shor's algorithm; captured exchanges are exposed to harvest-now-decrypt-later.",
+      "extensions": [
+        "cbl",
+        "cob",
+        "cpy",
+        "pli",
+        "pl1",
+        "asm"
+      ],
+      "ignore_case": true,
+      "pattern": "(?<!['\\\"])\\bCALL\\s+['\\\"]?CSN[DF]EDH\\b",
+      "remediation": "Plan a move to a quantum-safe or hybrid key establishment supported by your ICSF level and Crypto Express adapter; inventory every partner using this exchange.",
+      "references": [
+        "https://www.ibm.com/docs/en/zos (z/OS Cryptographic Services ICSF Application Programmer's Guide)"
+      ]
+    },
+    {
+      "id": "QG-ICSF-002",
+      "title": "IBM ICSF PKA Encrypt (CSNDPKE/CSNFPKE)",
+      "algorithm": "RSA",
+      "operation": "encryption",
+      "algorithm_risk": "high",
+      "quantum_threat": "RSA-encrypted data captured today could be decrypted later (harvest-now-decrypt-later).",
+      "extensions": [
+        "cbl",
+        "cob",
+        "cpy",
+        "pli",
+        "pl1",
+        "asm"
+      ],
+      "ignore_case": true,
+      "pattern": "(?<!['\\\"])\\bCALL\\s+['\\\"]?CSN[DF]PKE\\b",
+      "remediation": "Replace RSA public-key encryption with a quantum-safe or hybrid key-establishment scheme available on your ICSF level.",
+      "references": [
+        "https://www.ibm.com/docs/en/zos (z/OS Cryptographic Services ICSF Application Programmer's Guide)"
+      ]
+    },
+    {
+      "id": "QG-ICSF-003",
+      "title": "IBM ICSF Symmetric Key Export under a public key (CSNDSYX/CSNFSYX)",
+      "algorithm": "RSA/ECC",
+      "operation": "encryption",
+      "algorithm_risk": "high",
+      "quantum_threat": "Symmetric keys wrapped with a classical public key can be recovered once that key is broken.",
+      "extensions": [
+        "cbl",
+        "cob",
+        "cpy",
+        "pli",
+        "pl1",
+        "asm"
+      ],
+      "ignore_case": true,
+      "pattern": "(?<!['\\\"])\\bCALL\\s+['\\\"]?CSN[DF]SYX\\b",
+      "remediation": "Identify the wrapping key type; plan key transport under a quantum-safe or hybrid scheme and re-wrap long-lived keys.",
+      "references": [
+        "https://www.ibm.com/docs/en/zos (z/OS Cryptographic Services ICSF Application Programmer's Guide)"
+      ]
+    },
+    {
+      "id": "QG-ICSF-004",
+      "title": "IBM ICSF PKA Key Generate (CSNDPKG/CSNFPKG)",
+      "algorithm": "PKA (verify key type)",
+      "operation": "key_generation",
+      "algorithm_risk": "medium",
+      "quantum_threat": "PKA Key Generate creates RSA or ECC keys unless the skeleton token is a quantum-safe type; check the token built for this call.",
+      "extensions": [
+        "cbl",
+        "cob",
+        "cpy",
+        "pli",
+        "pl1",
+        "asm"
+      ],
+      "ignore_case": true,
+      "pattern": "(?<!['\\\"])\\bCALL\\s+['\\\"]?CSN[DF]PKG\\b",
+      "remediation": "Check the key token passed to this call. If it is RSA or ECC, plan migration; if it is already a quantum-safe type, add 'quantumguard: ignore' with a note.",
+      "references": [
+        "https://www.ibm.com/docs/en/zos (z/OS Cryptographic Services ICSF Application Programmer's Guide)"
+      ]
+    },
+    {
+      "id": "QG-ICSF-005",
+      "title": "IBM ICSF Digital Signature Generate (CSNDDSG/CSNFDSG)",
+      "algorithm": "PKA signature (verify key type)",
+      "operation": "signature",
+      "algorithm_risk": "medium",
+      "quantum_threat": "RSA/ECDSA signatures could be forged once those algorithms are breakable.",
+      "extensions": [
+        "cbl",
+        "cob",
+        "cpy",
+        "pli",
+        "pl1",
+        "asm"
+      ],
+      "ignore_case": true,
+      "pattern": "(?<!['\\\"])\\bCALL\\s+['\\\"]?CSN[DF]DSG\\b",
+      "remediation": "Check the rule array and key used. Plan migration of RSA/ECDSA signing to a quantum-safe signature scheme supported by your ICSF level.",
+      "references": [
+        "https://www.ibm.com/docs/en/zos (z/OS Cryptographic Services ICSF Application Programmer's Guide)"
+      ]
+    },
+    {
+      "id": "QG-ICSF-006",
+      "title": "IBM ICSF classical private key token (RSA-CRT / RSA-PRIV / ECC-PAIR ...)",
+      "algorithm": "RSA/ECC",
+      "operation": "key_generation",
+      "algorithm_risk": "high",
+      "quantum_threat": "The PKA Key Token Build keyword selects a classical RSA or ECC private key.",
+      "extensions": [
+        "cbl",
+        "cob",
+        "cpy",
+        "pli",
+        "pl1",
+        "asm"
+      ],
+      "pattern": "['\"](?:RSA-CRT|RSA-PRIV|RSA-AESC|RSA-AESM|RSAMEVAR|ECC-PAIR)\\s*['\"]",
+      "remediation": "This builds an RSA or ECC private-key token (PKA Key Token Build). Plan migration of the key and every service that uses it.",
+      "references": [
+        "https://www.ibm.com/docs/en/zos (z/OS Cryptographic Services ICSF Application Programmer's Guide)"
+      ]
     }
   ]
 }

@@ -1,18 +1,18 @@
 # QuantumGuard evaluation report
 
-Generated 2026-10-17 08:27 UTC by `python scripts/evaluate.py` (QuantumGuard 0.1.0). All values are measured by running the code; the dataset is small and synthetic, so treat these as prototype sanity checks, not coverage claims.
+Generated 2026-10-17 12:19 UTC by `python scripts/evaluate.py` (QuantumGuard 0.1.0). All values are measured by running the code; the dataset is small and synthetic, so treat these as prototype sanity checks, not coverage claims.
 
 ## 1. Detection on the labelled corpus (`tests/fixtures/labeled_corpus`)
 
 | Metric | Value |
 |---|---|
-| Labelled positives | 29 |
-| Predicted findings | 26 |
-| True positives | 25 |
+| Labelled positives | 33 |
+| Predicted findings | 29 |
+| True positives | 28 |
 | False positives | 1 |
-| False negatives | 4 |
-| Precision | 0.962 |
-| Recall | 0.862 |
+| False negatives | 5 |
+| Precision | 0.966 |
+| Recall | 0.848 |
 
 False positives:
 
@@ -21,6 +21,7 @@ False positives:
 False negatives (known limitations, kept in the corpus on purpose):
 
 - `JavaCases.java:9` QG-RSA-004
+- `MFCASES.cbl:12` QG-ICSF-001
 - `js_cases.js:6` QG-ECDH-JS
 - `py_hard.py:2` QG-RSA-001
 - `py_hard.py:3` QG-RSA-001
@@ -56,6 +57,7 @@ False negatives (known limitations, kept in the corpus on purpose):
 | `feature/add-ecdsa-receipts` | PASSED WITH WARNINGS | PASSED WITH WARNINGS | 0 |
 | `feature/docs-and-tests` | PASSED WITH WARNINGS | PASSED WITH WARNINGS | 0 |
 | `feature/upgrade-liboqs` | PASSED | PASSED | 0 |
+| `feature/mainframe-key-export` | BLOCKED | BLOCKED | 1 |
 
 ## 4. Risk ranking of documented scenarios
 

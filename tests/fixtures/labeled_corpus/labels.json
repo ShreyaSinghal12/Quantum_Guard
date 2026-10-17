@@ -1,17 +1,170 @@
 {
-  "description": "Hand-labelled ground truth: every (file, line, rule) that SHOULD be reported. Lines not listed should produce no finding. py_hard.py, the dynamic Java call and createECDH are deliberate false-negative cases; the string on py_negative.py line 8 is a deliberate false-positive case.",
+  "description": "Hand-labelled ground truth: every (file, line, rule) that SHOULD be reported. Lines not listed should produce no finding. py_hard.py, the dynamic Java call and createECDH are deliberate false-negative cases; the string on py_negative.py line 8 is a deliberate false-positive case. MFCASES.cbl line 12 (dynamic CALL through a variable) is a deliberate false negative.",
   "expected": [
-    ["py_positive.py", 4, "QG-RSA-001"], ["py_positive.py", 5, "QG-RSA-003"], ["py_positive.py", 6, "QG-EC-001"],
-    ["py_positive.py", 7, "QG-ECDH-001"], ["py_positive.py", 8, "QG-ECDSA-001"], ["py_positive.py", 9, "QG-DH-001"],
-    ["py_positive.py", 10, "QG-RSA-001"], ["py_positive.py", 10, "QG-WEAK-001"], ["py_positive.py", 11, "QG-RSA-SIG-001"],
-    ["py_positive.py", 14, "QG-RSA-002"], ["py_positive.py", 15, "QG-RSA-003"],
-    ["py_hard.py", 2, "QG-RSA-001"], ["py_hard.py", 3, "QG-RSA-001"],
-    ["JavaCases.java", 3, "QG-RSA-004"], ["JavaCases.java", 4, "QG-RSA-004"], ["JavaCases.java", 5, "QG-ECDSA-001"],
-    ["JavaCases.java", 6, "QG-DH-001"], ["JavaCases.java", 9, "QG-RSA-004"],
-    ["go_cases.go", 4, "QG-RSA-006"], ["go_cases.go", 5, "QG-RSA-006"], ["go_cases.go", 6, "QG-ECDH-002"],
-    ["go_cases.go", 7, "QG-ECDSA-001"], ["go_cases.go", 8, "QG-RSA-006"], ["go_cases.go", 8, "QG-WEAK-001"],
-    ["js_cases.js", 2, "QG-RSA-005"], ["js_cases.js", 3, "QG-RSA-005"], ["js_cases.js", 4, "QG-DH-001"],
-    ["js_cases.js", 6, "QG-ECDH-JS"],
-    ["synthetic_key.pem", 1, "QG-KEY-001"]
+    [
+      "py_positive.py",
+      4,
+      "QG-RSA-001"
+    ],
+    [
+      "py_positive.py",
+      5,
+      "QG-RSA-003"
+    ],
+    [
+      "py_positive.py",
+      6,
+      "QG-EC-001"
+    ],
+    [
+      "py_positive.py",
+      7,
+      "QG-ECDH-001"
+    ],
+    [
+      "py_positive.py",
+      8,
+      "QG-ECDSA-001"
+    ],
+    [
+      "py_positive.py",
+      9,
+      "QG-DH-001"
+    ],
+    [
+      "py_positive.py",
+      10,
+      "QG-RSA-001"
+    ],
+    [
+      "py_positive.py",
+      10,
+      "QG-WEAK-001"
+    ],
+    [
+      "py_positive.py",
+      11,
+      "QG-RSA-SIG-001"
+    ],
+    [
+      "py_positive.py",
+      14,
+      "QG-RSA-002"
+    ],
+    [
+      "py_positive.py",
+      15,
+      "QG-RSA-003"
+    ],
+    [
+      "py_hard.py",
+      2,
+      "QG-RSA-001"
+    ],
+    [
+      "py_hard.py",
+      3,
+      "QG-RSA-001"
+    ],
+    [
+      "JavaCases.java",
+      3,
+      "QG-RSA-004"
+    ],
+    [
+      "JavaCases.java",
+      4,
+      "QG-RSA-004"
+    ],
+    [
+      "JavaCases.java",
+      5,
+      "QG-ECDSA-001"
+    ],
+    [
+      "JavaCases.java",
+      6,
+      "QG-DH-001"
+    ],
+    [
+      "JavaCases.java",
+      9,
+      "QG-RSA-004"
+    ],
+    [
+      "go_cases.go",
+      4,
+      "QG-RSA-006"
+    ],
+    [
+      "go_cases.go",
+      5,
+      "QG-RSA-006"
+    ],
+    [
+      "go_cases.go",
+      6,
+      "QG-ECDH-002"
+    ],
+    [
+      "go_cases.go",
+      7,
+      "QG-ECDSA-001"
+    ],
+    [
+      "go_cases.go",
+      8,
+      "QG-RSA-006"
+    ],
+    [
+      "go_cases.go",
+      8,
+      "QG-WEAK-001"
+    ],
+    [
+      "js_cases.js",
+      2,
+      "QG-RSA-005"
+    ],
+    [
+      "js_cases.js",
+      3,
+      "QG-RSA-005"
+    ],
+    [
+      "js_cases.js",
+      4,
+      "QG-DH-001"
+    ],
+    [
+      "js_cases.js",
+      6,
+      "QG-ECDH-JS"
+    ],
+    [
+      "synthetic_key.pem",
+      1,
+      "QG-KEY-001"
+    ],
+    [
+      "MFCASES.cbl",
+      6,
+      "QG-ICSF-006"
+    ],
+    [
+      "MFCASES.cbl",
+      10,
+      "QG-ICSF-004"
+    ],
+    [
+      "MFCASES.cbl",
+      11,
+      "QG-ICSF-005"
+    ],
+    [
+      "MFCASES.cbl",
+      12,
+      "QG-ICSF-001"
+    ]
   ]
 }

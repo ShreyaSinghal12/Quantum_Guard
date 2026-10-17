@@ -6,7 +6,7 @@ All results below come from running QuantumGuard on the generated **synthetic** 
 
 ```bash
 pip install -r requirements.txt
-python -m pytest -q                 # expect: 92 passed
+python -m pytest -q                 # expect: 100 passed
 streamlit run app.py
 ```
 
@@ -21,17 +21,21 @@ Open http://localhost:8501. Keep a terminal open in the project folder.
 | 2025-04-02 | main | Native ML-KEM | `native/CMakeLists.txt` pins **liboqs 0.10.1**, `kem_demo.c` uses ML-KEM-768 |
 | 2025-06-10 | main | Migration | RSA removed from `payments/token_exchange.py` |
 | 2025-08-05 | main | Python PQC experiment | unpinned `liboqs-python`, code uses `"Kyber768"` |
+| 2025-08-20 | main | Mainframe batch | COBOL `mainframe/SETTLE.cbl` calls IBM ICSF `CSNDEDH` (ECC Diffie-Hellman) and builds an `'ECC-PAIR'` key token; a commented-out `CSNDPKG` call is ignored |
 | 2025-09-12 | feature/legacy-partner-rsa | | re-adds the removed RSA key generation line |
 | 2025-09-13 | feature/add-ecdsa-receipts | | new ECDSA signing |
 | 2025-09-14 | feature/docs-and-tests | | comment mentioning RSA + RSA in a test fixture |
 | 2025-09-15 | feature/upgrade-liboqs | | liboqs 0.10.1 -> 0.11.0 |
+| 2025-09-16 | feature/mainframe-key-export | | COBOL adds `CALL 'CSNDSYX'` (key export under a public key) |
 
 ## Steps and expected results
 
 **1. Build and audit (A).** Sidebar -> *Demo mode (synthetic data)* -> **Build and audit demo repository**.
-Expected: yellow DEMO MODE banner; Overview shows **8 findings: 1 critical, 5 high, 2 medium; 2 historical-only; 2 PQC needing review**. Point out "Files scanned / Commits audited: 5" at the bottom - this is a live scan.
+Expected: yellow DEMO MODE banner; Overview shows **10 findings: 2 critical, 6 high, 2 medium; 2 historical-only; 2 PQC needing review**. Point out "Files scanned / Commits audited: 6" at the bottom - this is a live scan.
 
 **2. Current vs history (B).** *Repository scan*: `payments/token_exchange.py` is **not** listed (RSA was removed), and `utils/notes.py` is not listed either (comments/docstrings only). Then *Historical audit*: the exposure chart shows two grey bars for `payments/token_exchange.py` (QG-RSA-001 and QG-RSA-003) from **2025-01-15 to 2025-06-10**. Expand the historical-only finding: **exposure 146 days**, first seen / removed commits, and the recommendation that says this is *potential exposure, not confirmed compromise*.
+
+**2b. Mainframe (IBM Z).** In *Repository scan*, filter Algorithm to ECDH / RSA/ECC: `mainframe/SETTLE.cbl` line 13 (`CALL 'CSNDEDH'`, ICSF ECC Diffie-Hellman, **critical 80**) and line 8 (`'ECC-PAIR'` key token). Line 5, a commented-out `CSNDPKG` call, is not reported.
 
 **3. PQC validation (D).** *PQC validation*:
 - **ML-KEM via liboqs - Potentially outdated draft, confidence verified.** Evidence: liboqs 0.10.1 is pinned in CMake; liboqs 0.10.0 added the *Initial Public Draft* of ML-KEM and final FIPS 203 arrived in 0.11.0. Sources are linked.
@@ -45,11 +49,11 @@ Then show the others (or run them in the terminal):
 
 ```bash
 D=/tmp/quantumguard-demo-repo        # path shown in the sidebar
-for b in feature/legacy-partner-rsa feature/add-ecdsa-receipts feature/docs-and-tests feature/upgrade-liboqs; do
+for b in feature/legacy-partner-rsa feature/add-ecdsa-receipts feature/docs-and-tests feature/upgrade-liboqs feature/mainframe-key-export; do
   python -m quantumguard ci --repo $D --base main --head $b > /dev/null; echo "$b -> exit $?"; done
 ```
 
-Expected: `1`, `0` (warn: signatures), `0` (warn: test fixture only; the comment is ignored), `0` (PASS: ML-KEM now aligned with FIPS 203 per liboqs 0.11.0 notes).
+Expected: `1`, `0` (warn: signatures), `0` (warn: test fixture only; the comment is ignored), `0` (PASS: ML-KEM now aligned with FIPS 203 per liboqs 0.11.0 notes), `1` (BLOCK: COBOL `CSNDSYX` key export, QG-ICSF-003).
 
 **6. Reports (G).** *Reports* -> download JSON and CSV. The JSON contains evidence, Git events, every score factor and the policy used.
 

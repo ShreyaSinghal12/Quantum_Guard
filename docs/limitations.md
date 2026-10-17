@@ -5,9 +5,16 @@ QuantumGuard is a hackathon prototype. It does not provide production-grade cove
 ## Detection (false negatives)
 
 - **Pattern matching, not program analysis.** Import aliases (`import rsa as r`), dynamic calls (`getattr`), algorithm names held in variables (`KeyPairGenerator.getInstance(algo)`), wrappers and configuration-driven crypto are missed. These cases are kept in the evaluation corpus and show up as false negatives.
-- **Limited rule set.** 15 rules covering common Python, Java/Kotlin, Go and Node.js APIs and PEM headers. No rules yet for TLS/SSH configuration files, certificates, C/OpenSSL calls, .NET, Rust crates, Node `createECDH`, or binary artefacts.
+- **Limited rule set.** 21 rules covering common Python, Java/Kotlin, Go and Node.js APIs, PEM headers and IBM ICSF calls in COBOL / PL/I / assembler. No rules yet for TLS/SSH configuration files, certificates, C/OpenSSL calls, .NET, Rust crates, Node `createECDH`, or binary artefacts.
 - **Multi-line calls** are detected only if the identifying part (for example `rsa.generate_private_key(`) is on one line.
 - Files over 1 MB, binaries, symlinks, and excluded folders (`node_modules`, virtual environments, `vendor`, `build`, ...) are skipped.
+
+## IBM Z / mainframe
+
+- Static source scanning only. No connection to z/OS, ICSF, Crypto Express adapters, SMF records or IBM Quantum Safe tools; no runtime inventory of which keys actually exist.
+- Dynamic calls (`CALL WS-SERVICE-NAME`), copybook expansion, JCL and load modules are not analysed (one dynamic call is a deliberate false negative in the corpus).
+- PKA Key Generate and Digital Signature Generate are algorithm-agnostic services: the finding says the key type must be verified, because newer ICSF levels can also generate quantum-safe keys.
+- No PQC version rules for ICSF / Crypto Express levels yet; those would need cited IBM documentation.
 
 ## Detection (false positives)
 
@@ -47,4 +54,4 @@ QuantumGuard is a hackathon prototype. It does not provide production-grade cove
 
 ## Evaluation
 
-- The labelled corpus (29 positives) and the CI scenarios (14 changes) are small and synthetic and were written by the same team that wrote the rules. Real-world precision and recall will be lower.
+- The labelled corpus (33 positives) and the CI scenarios (14 changes) are small and synthetic and were written by the same team that wrote the rules. Real-world precision and recall will be lower.
