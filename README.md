@@ -2,6 +2,13 @@
 
 **Quantum-safe cryptography risk auditor, PQC validator and CI/CD guard** - a hackathon prototype.
 
+| | |
+|---|---|
+| **Live demo** | https://shreyasinghal12-quantum-guard-app-vsw6qj.streamlit.app/ |
+| **Source code** | https://github.com/ShreyaSinghal12/Quantum_Guard |
+
+**Try the live demo:** open the link, expand **Demo mode (synthetic data)** in the sidebar and click **Build and audit demo repository**. Then explore the Overview, Historical audit, PQC validation, Risk prioritization and CI/CD gate pages (set Head to `feature/legacy-partner-rsa` or `feature/mainframe-key-export` and click **Run CI gate** to see a block). The hosted app runs on Streamlit Community Cloud and cannot read folders on your own computer; to audit your own repositories, run QuantumGuard locally (see Quick start). The app may take a moment to wake up if it has been idle.
+
 QuantumGuard connects four capabilities into one evidence-driven workflow:
 
 1. **Discover** quantum-vulnerable cryptography (RSA, ECC, ECDH, DH, ECDSA, EdDSA, embedded classical keys) in current code **and** in Git history - including when a pattern first appeared, was removed, and came back.
